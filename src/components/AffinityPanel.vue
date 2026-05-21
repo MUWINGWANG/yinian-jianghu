@@ -24,11 +24,20 @@
           :key="npc.id"
           class="npc-card"
         >
-          <div class="npc-card-header">
-            <span class="npc-name">{{ npc.name }}</span>
-            <span class="npc-role-badge">{{ npc.role }}</span>
+          <div class="npc-portrait-row">
+            <img
+              :src="'/images/npcs/' + npc.portrait"
+              :alt="npc.name"
+              class="npc-portrait"
+            />
+            <div class="npc-card-info">
+              <div class="npc-card-header">
+                <span class="npc-name">{{ npc.name }}</span>
+                <span class="npc-role-badge">{{ npc.role }}</span>
+              </div>
+              <span class="npc-faction">{{ factionLabel(npc.faction) }}</span>
+            </div>
           </div>
-          <span class="npc-faction">{{ factionLabel(npc.faction) }}</span>
 
           <div class="affinity-bars">
             <div class="affinity-row">
@@ -235,6 +244,28 @@ function factionLabel(faction: string): string {
   transition: border-color 0.2s;
 }
 .npc-card:hover { border-color: #C9A84C60; }
+
+.npc-portrait-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+.npc-portrait {
+  width: 48px;
+  height: 60px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 2px;
+  border: 1px solid #3A2E1E;
+  flex-shrink: 0;
+}
+.npc-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 
 .npc-card-header {
   display: flex;
