@@ -43,9 +43,15 @@ const emit = defineEmits<{ choose: [choiceId: string] }>()
   font-size: 0.9rem;
   cursor: pointer;
   text-align: left;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: inset 0 1px 4px rgba(201, 168, 76, 0.06);
 }
-.choice-btn:hover:not(.disabled) { background: #3A2E1E; }
+.choice-btn:hover:not(.disabled) {
+  background: #3A2E1E;
+  box-shadow:
+    inset 0 1px 4px rgba(201, 168, 76, 0.1),
+    0 0 8px rgba(201, 168, 76, 0.15);
+}
 .choice-btn.selected { border-color: #C0392B; color: #C0392B; }
 .choice-btn.disabled { opacity: 0.5; cursor: not-allowed; }
 .no-choices { color: #8B1A1A; font-style: italic; text-align: center; padding: 1rem; }

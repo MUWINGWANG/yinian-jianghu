@@ -1,9 +1,21 @@
 <template>
   <div class="game-layout">
+    <!-- 江湖关系面板（固定侧边） -->
+    <AffinityPanel />
+
     <!-- 状态栏 -->
     <header class="status-bar">
-      <span>第 {{ game.day }} / 30 天</span>
-      <span>秘密扩散：{{ game.secretSpread }} / 10</span>
+      <span class="status-item">
+        <span class="status-icon">☀</span>
+        第 {{ game.day }} / 30 天
+      </span>
+      <span
+        class="status-item"
+        :class="{ 'spread-warning': game.secretSpread >= 6 }"
+      >
+        <span class="status-icon">{{ game.secretSpread >= 6 ? '⚠' : '◈' }}</span>
+        秘密扩散：{{ game.secretSpread }} / 10
+      </span>
       <span v-if="game.day >= 30" class="ending-hint">⚑ 结局待触发</span>
     </header>
 
@@ -52,6 +64,17 @@
           @visit="cal.useNightVisit"
         />
 
+        <!-- 今夜已访提示 -->
+        <Transition name="night-visited">
+          <div
+            v-if="cal.choiceMade.value && cal.nightVisitUsed.value && cal.nightVisitNpc.value"
+            class="night-visited-tag"
+          >
+            <span class="night-visited-icon">🌙</span>
+            今夜已访：{{ nightVisitedName }}
+          </div>
+        </Transition>
+
         <!-- 推进天数 -->
         <div v-if="cal.choiceMade.value" class="advance-bar">
           <button class="advance-btn" @click="onAdvanceDay">
@@ -64,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useGameStore } from '../stores/game'
 import { useCalendar } from '../composables/useCalendar'
 import DayScene from '../components/DayScene.vue'
@@ -72,9 +95,18 @@ import ChoicePanel from '../components/ChoicePanel.vue'
 import EveningFeedback from '../components/EveningFeedback.vue'
 import NightVisitPanel from '../components/NightVisitPanel.vue'
 import CombatView from '../components/CombatView.vue'
+import AffinityPanel from '../components/AffinityPanel.vue'
+import { NPC_PROFILES } from '../data/npcs'
 
 const game = useGameStore()
 const cal = useCalendar()
+
+// 今夜已访 NPC 名称
+const nightVisitedName = computed(() => {
+  const id = cal.nightVisitNpc.value
+  if (!id) return ''
+  return NPC_PROFILES.find(n => n.id === id)?.name ?? id
+})
 
 // 战斗状态
 const combatDone = ref(false)
@@ -121,9 +153,12 @@ function onAdvanceDay() {
   color: #F5E6C8;
   font-family: 'Noto Serif SC', serif;
 }
+
+/* ── 状态栏 ── */
 .status-bar {
   display: flex;
   gap: 1.5rem;
+  align-items: center;
   padding: 0.5rem 1rem;
   background: #2A1E0E;
   border: 1px solid #C9A84C;
@@ -132,6 +167,22 @@ function onAdvanceDay() {
   font-size: 0.8rem;
   color: #E0CC98;
 }
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.status-icon { font-size: 0.85rem; }
+.spread-warning {
+  color: #C0392B;
+  font-weight: bold;
+  animation: pulse-warn 1.5s ease-in-out infinite;
+}
+@keyframes pulse-warn {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
 .ending-hint { color: #C0392B; }
 .ending-placeholder {
   padding: 2rem;
@@ -141,6 +192,7 @@ function onAdvanceDay() {
 }
 .ending-placeholder h2 { color: #C0392B; margin-bottom: 1rem; }
 .ending-note { font-size: 0.8rem; color: #8B1A1A; margin-top: 1rem; }
+
 .advance-bar {
   padding: 1rem 1.5rem;
   border-top: 1px solid #2A1E0E;
@@ -159,4 +211,23 @@ function onAdvanceDay() {
   transition: background 0.2s;
 }
 .advance-btn:hover { background: #8B1A1A; }
+
+/* ── 今夜已访 ── */
+.night-visited-tag {
+  margin: 0.4rem 1.5rem;
+  padding: 0.35rem 0.8rem;
+  background: rgba(42, 30, 14, 0.7);
+  border: 1px solid #4A7C59;
+  border-radius: 2px;
+  font-size: 0.78rem;
+  color: #A0C090;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.night-visited-icon { font-size: 0.85rem; }
+.night-visited-enter-active,
+.night-visited-leave-active { transition: opacity 0.3s, transform 0.3s; }
+.night-visited-enter-from,
+.night-visited-leave-to { opacity: 0; transform: translateX(-8px); }
 </style>

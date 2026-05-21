@@ -21,6 +21,10 @@ defineProps<{ event: DayEvent }>()
   border: 2px solid #C0392B;
   border-radius: 4px;
   margin-bottom: 1rem;
+  box-shadow:
+    inset 0 2px 8px rgba(139, 26, 26, 0.12),
+    inset 0 -1px 4px rgba(26, 18, 8, 0.08),
+    0 0 12px rgba(192, 57, 43, 0.18);
 }
 .day-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
 .day-badge { font-size: 0.8rem; color: #8B1A1A; border: 1px solid #8B1A1A; padding: 2px 8px; border-radius: 2px; }
