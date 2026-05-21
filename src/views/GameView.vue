@@ -20,48 +20,95 @@
       <!-- 清晨：场景 -->
       <DayScene :event="cal.currentEvent.value" />
 
-      <!-- 日间：抉择 -->
-      <ChoicePanel
-        :choices="cal.currentEvent.value.choices"
-        :disabled="cal.choiceMade.value"
-        :selected-id="cal.selectedChoice.value?.id"
-        @choose="cal.makeChoice"
+      <!-- 战斗（有战斗事件且未完成时显示） -->
+      <CombatView
+        v-if="cal.currentEvent.value.hasCombat && !combatDone"
+        :enemy-name="combatEnemy.name"
+        :enemy-hp="combatEnemy.hp"
+        @win="onCombatWin"
+        @lose="onCombatLose"
       />
 
-      <!-- 傍晚：关系波动（抉择后显示） -->
-      <EveningFeedback
-        v-if="cal.choiceMade.value"
-        :choice="cal.selectedChoice.value"
-      />
+      <!-- 日间：抉择（无战斗、或战斗已完成时显示） -->
+      <template v-if="!cal.currentEvent.value.hasCombat || combatDone">
+        <ChoicePanel
+          :choices="cal.currentEvent.value.choices"
+          :disabled="cal.choiceMade.value"
+          :selected-id="cal.selectedChoice.value?.id"
+          @choose="cal.makeChoice"
+        />
 
-      <!-- 夜间：可选夜访（抉择后显示） -->
-      <NightVisitPanel
-        v-if="cal.choiceMade.value"
-        :used="cal.nightVisitUsed.value"
-        :visited-npc="cal.nightVisitNpc.value"
-        @visit="cal.useNightVisit"
-      />
+        <!-- 傍晚：关系波动（抉择后显示） -->
+        <EveningFeedback
+          v-if="cal.choiceMade.value"
+          :choice="cal.selectedChoice.value"
+        />
 
-      <!-- 推进天数 -->
-      <div v-if="cal.choiceMade.value" class="advance-bar">
-        <button class="advance-btn" @click="cal.advanceToNextDay()">
-          进入第 {{ game.day + 1 }} 天 →
-        </button>
-      </div>
+        <!-- 夜间：可选夜访（抉择后显示） -->
+        <NightVisitPanel
+          v-if="cal.choiceMade.value"
+          :used="cal.nightVisitUsed.value"
+          :visited-npc="cal.nightVisitNpc.value"
+          @visit="cal.useNightVisit"
+        />
+
+        <!-- 推进天数 -->
+        <div v-if="cal.choiceMade.value" class="advance-bar">
+          <button class="advance-btn" @click="onAdvanceDay">
+            进入第 {{ game.day + 1 }} 天 →
+          </button>
+        </div>
+      </template>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useGameStore } from '../stores/game'
 import { useCalendar } from '../composables/useCalendar'
 import DayScene from '../components/DayScene.vue'
 import ChoicePanel from '../components/ChoicePanel.vue'
 import EveningFeedback from '../components/EveningFeedback.vue'
 import NightVisitPanel from '../components/NightVisitPanel.vue'
+import CombatView from '../components/CombatView.vue'
 
 const game = useGameStore()
 const cal = useCalendar()
+
+// 战斗状态
+const combatDone = ref(false)
+
+// 每天进入时重置 combatDone
+watch(() => game.day, () => {
+  combatDone.value = false
+})
+
+// 根据当前天数决定战斗敌人参数
+const COMBAT_ENEMIES: Record<number, { name: string; hp: number }> = {
+  5: { name: '荒原帮壮汉', hp: 60 },
+  14: { name: '宴席刺客', hp: 80 },
+  25: { name: '血煞堂杀手', hp: 100 },
+}
+
+const combatEnemy = {
+  get name() { return COMBAT_ENEMIES[game.day]?.name ?? '敌人' },
+  get hp() { return COMBAT_ENEMIES[game.day]?.hp ?? 60 },
+}
+
+function onCombatWin() {
+  combatDone.value = true
+}
+
+function onCombatLose() {
+  // 战败：秘密扩散 +1，仍可继续游戏
+  game.applyOutcome({ secretSpreadDelta: 1 })
+  combatDone.value = true
+}
+
+function onAdvanceDay() {
+  cal.advanceToNextDay()
+}
 </script>
 
 <style scoped>

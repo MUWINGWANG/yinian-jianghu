@@ -1,0 +1,149 @@
+<style>
+  .faction-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .faction-grid-bottom {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 0 0 20px 0;
+  }
+  .faction-card {
+    border-radius: 10px;
+    padding: 20px 16px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .faction-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  .faction-card.selected { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,0.4); }
+
+  .f-qingyun  { background: linear-gradient(145deg, #1a2a4a, #2c4a7c); }
+  .f-lingyin  { background: linear-gradient(145deg, #2a3a1a, #3d5c2a); }
+  .f-taixu    { background: linear-gradient(145deg, #3a2a1a, #6b4c2a); }
+  .f-xueshao  { background: linear-gradient(145deg, #3a0a0a, #7c1a1a); }
+  .f-huangyuan{ background: linear-gradient(145deg, #2a2010, #5c4a20); }
+
+  .faction-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .badge-zheng { background: rgba(100,180,255,0.25); color: #a0d4ff; }
+  .badge-mo    { background: rgba(255,80,80,0.25);  color: #ffaaaa; }
+
+  .faction-name { font-size: 1.5rem; font-weight: bold; color: #fff; margin: 4px 0 6px; letter-spacing: 2px; }
+  .faction-sub  { font-size: 0.75rem; color: rgba(255,255,255,0.55); margin-bottom: 10px; letter-spacing: 1px; }
+  .faction-icon { font-size: 2rem; margin-bottom: 8px; }
+  .faction-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 8px;
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);
+  }
+  .faction-desc { font-size: 0.78rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin-top: 8px; }
+  .faction-weapon { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 8px; }
+  .faction-weapon span { color: rgba(255,220,100,0.8); }
+
+  .section-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin: 20px 0 8px;
+  }
+  .secret-banner {
+    background: rgba(180,30,30,0.2);
+    border: 1px solid rgba(180,30,30,0.4);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    color: rgba(255,160,160,0.85);
+    margin-top: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+</style>
+
+<h2>五大门派设定草案</h2>
+<p class="subtitle">点击卡片选中 · 可多选 · 告诉我哪些需要调整</p>
+
+<div class="section-label">正道三派</div>
+<div class="faction-grid" data-multiselect>
+
+  <div class="faction-card f-qingyun option" data-choice="qingyun" onclick="toggleSelect(this)">
+    <div class="letter">一</div>
+    <div class="faction-icon">⚔️</div>
+    <div class="faction-badge badge-zheng">正道</div>
+    <div class="faction-name">青云门</div>
+    <div class="faction-sub">儒家底色 · 剑宗</div>
+    <div class="faction-desc">江湖执法者，与朝廷关系暧昧。门规严苛，以「义」字当先。表面是正派支柱，实则对太虚观的异动早有察觉却选择沉默。</div>
+    <div class="faction-weapon">代表武学：<span>文剑十三式</span>（招式取自书法笔法）</div>
+    <div class="faction-tags">
+      <span class="tag">政治嗅觉强</span><span class="tag">剑法刚正</span><span class="tag">内部保守</span>
+    </div>
+  </div>
+
+  <div class="faction-card f-lingyin option" data-choice="lingyin" onclick="toggleSelect(this)">
+    <div class="letter">二</div>
+    <div class="faction-icon">🪷</div>
+    <div class="faction-badge badge-zheng">正道</div>
+    <div class="faction-name">灵隐宗</div>
+    <div class="faction-sub">佛家底色 · 禅武宗</div>
+    <div class="faction-desc">山中古刹，以医术和调解著称。从不主动介入纷争，却常常成为各方谈判的中间人。是主角最容易获得庇护的地方。</div>
+    <div class="faction-weapon">代表武学：<span>金刚护体功 / 慈悲杖法</span></div>
+    <div class="faction-tags">
+      <span class="tag">中立调停</span><span class="tag">医毒双绝</span><span class="tag">信息来源广</span>
+    </div>
+  </div>
+
+  <div class="faction-card f-taixu option" data-choice="taixu" onclick="toggleSelect(this)">
+    <div class="letter">三</div>
+    <div class="faction-icon">☯️</div>
+    <div class="faction-badge badge-zheng">正道</div>
+    <div class="faction-name">太虚观</div>
+    <div class="faction-sub">道家底色 · 内家宗</div>
+    <div class="faction-desc">表面超然物外，暗中经营已久。掌门玄机子以「无为」为名，行「有为」之实。主角所听到的秘密，正是从这里泄出。</div>
+    <div class="faction-weapon">代表武学：<span>太虚剑意 / 无形气劲</span></div>
+    <div class="faction-tags">
+      <span class="tag">内功深厚</span><span class="tag">城府极深</span><span class="tag">消息封锁</span>
+    </div>
+    <div class="secret-banner">⚠️ 核心秘密持有者 · 与血煞堂有十年密约</div>
+  </div>
+
+</div>
+
+<div class="section-label">魔道两派</div>
+<div class="faction-grid-bottom" data-multiselect>
+
+  <div class="faction-card f-xueshao option" data-choice="xueshao" onclick="toggleSelect(this)">
+    <div class="letter">四</div>
+    <div class="faction-icon">🩸</div>
+    <div class="faction-badge badge-mo">魔道</div>
+    <div class="faction-name">血煞堂</div>
+    <div class="faction-sub">刺客宗 · 暗杀流</div>
+    <div class="faction-desc">江湖最恐惧的名字。接受任何委托，从不留活口。与太虚观的密约是其最大的「保护伞」，一旦曝光，两败俱伤。</div>
+    <div class="faction-weapon">代表武学：<span>鬼手七绝 / 百步穿心针</span></div>
+    <div class="faction-tags">
+      <span class="tag">暗器毒术</span><span class="tag">情报网络</span><span class="tag">雇佣性质</span>
+    </div>
+  </div>
+
+  <div class="faction-card f-huangyuan option" data-choice="huangyuan" onclick="toggleSelect(this)">
+    <div class="letter">五</div>
+    <div class="faction-icon">🏜️</div>
+    <div class="faction-badge badge-mo">魔道</div>
+    <div class="faction-name">荒原帮</div>
+    <div class="faction-sub">绿林草莽 · 边疆义旅</div>
+    <div class="faction-desc">流民、逃兵、被正派驱逐者的聚集地。「魔道」之名是正派强加的标签，他们自视为被遗弃者的庇护所。道德最灰色的一派。</div>
+    <div class="faction-weapon">代表武学：<span>荒刀三十六路 / 驼背擒拿手</span></div>
+    <div class="faction-tags">
+      <span class="tag">人多势众</span><span class="tag">野路子功夫</span><span class="tag">反建制</span>
+    </div>
+  </div>
+
+</div>
