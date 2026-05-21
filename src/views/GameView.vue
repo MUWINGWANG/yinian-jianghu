@@ -16,16 +16,15 @@
         <span class="status-icon">{{ game.secretSpread >= 6 ? '⚠' : '◈' }}</span>
         秘密扩散：{{ game.secretSpread }} / 10
       </span>
-      <span v-if="game.day >= 30" class="ending-hint">⚑ 结局待触发</span>
+      <span v-if="game.day >= 30" class="ending-hint">⚑ 终局之日</span>
     </header>
 
-    <!-- 第 30 天：结局占位 -->
-    <div v-if="game.day >= 30" class="ending-placeholder">
-      <h2>终局之日</h2>
-      <p>{{ cal.currentEvent.value.scene }}</p>
-      <p class="ending-note">（结局系统将在 Phase 5 实现）</p>
-      <p>累积标记：{{ Array.from(game.flags).join('、') || '无' }}</p>
-    </div>
+    <!-- 第 30 天：结局 -->
+    <EndingView
+      v-if="game.day >= 30"
+      :ending-id="currentEndingId"
+      @restart="onRestart"
+    />
 
     <!-- 正常游戏日 -->
     <template v-else>
@@ -90,16 +89,24 @@
 import { ref, watch, computed } from 'vue'
 import { useGameStore } from '../stores/game'
 import { useCalendar } from '../composables/useCalendar'
+import { determineEnding } from '../composables/useEnding'
 import DayScene from '../components/DayScene.vue'
 import ChoicePanel from '../components/ChoicePanel.vue'
 import EveningFeedback from '../components/EveningFeedback.vue'
 import NightVisitPanel from '../components/NightVisitPanel.vue'
 import CombatView from '../components/CombatView.vue'
 import AffinityPanel from '../components/AffinityPanel.vue'
+import EndingView from './EndingView.vue'
 import { NPC_PROFILES } from '../data/npcs'
 
 const game = useGameStore()
 const cal = useCalendar()
+
+const currentEndingId = computed(() => game.day >= 30 ? determineEnding() : 'e7')
+
+function onRestart() {
+  window.location.reload()
+}
 
 // 今夜已访 NPC 名称
 const nightVisitedName = computed(() => {
@@ -184,14 +191,6 @@ function onAdvanceDay() {
 }
 
 .ending-hint { color: #C0392B; }
-.ending-placeholder {
-  padding: 2rem;
-  text-align: center;
-  border: 2px dashed #C0392B;
-  border-radius: 4px;
-}
-.ending-placeholder h2 { color: #C0392B; margin-bottom: 1rem; }
-.ending-note { font-size: 0.8rem; color: #8B1A1A; margin-top: 1rem; }
 
 .advance-bar {
   padding: 1rem 1.5rem;
