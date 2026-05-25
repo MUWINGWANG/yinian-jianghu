@@ -10,7 +10,7 @@ import os
 import json
 from pathlib import Path
 
-API_KEY = "***REDACTED***"
+API_KEY = os.environ["TENCENTMAAS_API_KEY"]
 SUBMIT_URL = "https://tokenhub.tencentmaas.com/v1/api/image/submit"
 QUERY_URL  = "https://tokenhub.tencentmaas.com/v1/api/image/query"
 MODEL      = "hy-image-lite"

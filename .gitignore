@@ -5,3 +5,5 @@ dist-ssr
 .DS_Store
 generation_log.json
 *.log
+.env
+.env.*
